@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ChatForm</class>
+ <widget class="QMainWindow" name="ChatForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>650</width>
+    <height>875</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>650</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>650</width>
+    <height>875</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Чат</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow#QWidget#ClickableLabel: {color: rgb(0, 0, 255);}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0" colspan="9">
+     <widget class="QListWidget" name="chat">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::NoSelection</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0" colspan="8">
+     <widget class="QPlainTextEdit" name="text_message">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="8">
+     <widget class="QPushButton" name="btn_send">
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="4">
+     <widget class="ClickableLabel" name="label_character">
+      <property name="styleSheet">
+       <string notr="true">color: rgb(77, 231, 231);</string>
+      </property>
+      <property name="text">
+       <string>Nejdan, character from</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="4">
+     <widget class="ClickableLabel" name="label_all_characters">
+      <property name="styleSheet">
+       <string notr="true">color: rgb(77, 231, 231);</string>
+      </property>
+      <property name="text">
+       <string>Nejdan, all_characters_from</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2">
+     <widget class="ClickableLabel" name="label_find">
+      <property name="styleSheet">
+       <string notr="true">color: rgb(77, 231, 231);</string>
+      </property>
+      <property name="text">
+       <string>Nejdan, find_anime</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="2">
+     <widget class="ClickableLabel" name="label_similar">
+      <property name="styleSheet">
+       <string notr="true">color: rgb(77, 231, 231);</string>
+      </property>
+      <property name="text">
+       <string>Nejdan, similar_anime_to</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="ClickableLabel" name="label_new_name">
+      <property name="styleSheet">
+       <string notr="true">color: rgb(77, 231, 231);</string>
+      </property>
+      <property name="text">
+       <string>Nejdan, set_new_name</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="6" colspan="2">
+     <widget class="ClickableLabel" name="label_franchise">
+      <property name="styleSheet">
+       <string notr="true">color: rgb(77, 231, 231);</string>
+      </property>
+      <property name="text">
+       <string>Nejdan, franchise</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="6" colspan="2">
+     <widget class="ClickableLabel" name="label_related">
+      <property name="styleSheet">
+       <string notr="true">color: rgb(77, 231, 231);</string>
+      </property>
+      <property name="text">
+       <string>Nejdan, related_to</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="ClickableLabel" name="label_random">
+      <property name="styleSheet">
+       <string notr="true">color: rgb(77, 231, 231);</string>
+      </property>
+      <property name="text">
+       <string>Nejdan, random_anime</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0">
+     <widget class="QLabel" name="label_login_as">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="7">
+     <widget class="ClickableLabel" name="label_exit">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(77, 231, 231);</string>
+      </property>
+      <property name="text">
+       <string>Выйти из аккаунта</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ClickableLabel</class>
+   <extends>QLabel</extends>
+   <header>label</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

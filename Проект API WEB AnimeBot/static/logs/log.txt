@@ -1,0 +1,139 @@
+
+Date: 2021-05-06 20:39:14.697469 User: client
+Code: 422 b'["Invalid parameter \'page\' value \\"274357\\": Must be a number between 1 and 100000."]'
+
+Date: 2021-05-06 20:39:17.080982 User: client
+Code: 422 b'["Invalid parameter \'page\' value \\"370671\\": Must be a number between 1 and 100000."]'
+
+Date: 2021-05-08 13:50:48.816098 User: client
+Query: find_related_to_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:50:48.829091 User: client
+Query: find_franchise
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:50:48.843083 User: client
+Query: find_all_characters_from_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:50:48.857074 User: client
+Query: find_all_characters_from_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:50:48.871067 User: client
+Query: random_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:50:48.884059 User: client
+Query: find_anime_by_name
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:50:48.898051 User: client
+Query: find_similar_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:50:48.911044 User: client
+Query: find_all_characters_from_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:50:48.924036 User: client
+Query: search_character_from_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:50:48.937029 User: client
+Query: find_franchise
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:50:48.950021 User: client
+Query: find_related_to_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:50:48.962014 User: client
+Query: find_anime_by_name
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:50:48.976007 User: client
+Query: random_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:52:07.522967 User: client
+Query: find_related_to_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:52:07.536958 User: client
+Query: find_franchise
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:52:07.550951 User: client
+Query: find_all_characters_from_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:52:07.563943 User: client
+Query: find_all_characters_from_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:52:07.577935 User: client
+Query: random_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:52:07.590927 User: client
+Query: find_anime_by_name
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:52:07.603920 User: client
+Query: find_similar_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:52:07.616912 User: client
+Query: find_all_characters_from_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:52:07.629905 User: client
+Query: search_character_from_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:52:07.642898 User: client
+Query: find_franchise
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:52:07.655891 User: client
+Query: find_related_to_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:52:07.668883 User: client
+Query: find_anime_by_name
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:52:07.681877 User: client
+Query: random_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 13:52:14.304508 User: client
+Query: random_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 14:05:02.803838 User: Violet Evergarden
+Query: random_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 14:05:02.817846 User: Violet Evergarden
+Query: find_anime_by_name
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 14:05:02.830823 User: Violet Evergarden
+Query: find_anime_by_name
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 14:05:02.844815 User: Violet Evergarden
+Query: search_character_from_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 14:05:02.857807 User: Violet Evergarden
+Query: search_character_from_anime
+Code: [Errno 11001] getaddrinfo failed
+
+Date: 2021-05-08 14:05:02.870800 User: Violet Evergarden
+Query: find_all_characters_from_anime
+Code: [Errno 11001] getaddrinfo failed
+
