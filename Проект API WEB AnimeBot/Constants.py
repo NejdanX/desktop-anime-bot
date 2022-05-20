@@ -1,5 +1,6 @@
 DB_FILE_NAME = 'static/db/users_info.db'
 
+# Краткое описание команд
 JUST_HELP = 'Это бот, который помогает в поиске аниме. Боту доступны следующие команды:\n' \
             '\tfind_anime - поиск аниме по названию\n' \
             '\tset_new_name - установить новое имя ботe\n' \
@@ -10,6 +11,8 @@ JUST_HELP = 'Это бот, который помогает в поиске ан
             '\tfranchise - вывод информации о франшизе\n' \
             '\trelated_to - вывод аниме, напрямую связанных с запрошенным\n' \
             'Если хотите узнать более подробную информацию о команде, введите:\n\t{bot name}, help {command name}'
+
+# Подробное описание каждой команды
 find_anime = 'Синтаксис: {name bot}, find_anime {name anime}\n' \
              'Альтернативный синтаксис: {command symbol}find_anime {name anime}\n' \
              'Выводит информацию об аниме: скриншот-превью, название, рейтинг, статус, тип, когда состоялся релиз,' \
@@ -45,14 +48,30 @@ related_to = 'Синтаксис: {name bot}, related_to {name anime}\n' \
              'Находит аниме и мангу, которые напрямую связаны с {name anime}. Выводит информацию в формате: ' \
              'сначала список аниме, с типом, типом связи, названием и ссылкой на страницу shikimori, а после мангу' \
              'в том же формате.'
+
+# Словарь для удобного доступа к help каждой команды
 COMMANDS_HELP = {
     'find_anime': find_anime,
     'set_new_name': set_new_name,
     'random_anime': random_anime,
     'similar_anime_to': similar_anime_to,
     'all_characters_from': all_characters_from,
-    'character from': character_from,
+    'character_from': character_from,
     'franchise': franchise,
     'related_to': related_to,
     'help': JUST_HELP
+}
+
+# Сокращанное название команд для более простой интеграции их в код и исключение дублирования кода
+COMMANDS = {
+    "FIND": 'find_anime',
+    "BOT_NAME": 'bot_name',
+    "SET_NAME": 'set_new_name',
+    "RANDOM": 'random_anime',
+    "SIMILAR": 'similar_anime_to',
+    "ALL_CHARACTERS": 'all_characters_from',
+    "CHARACTER_FROM": 'character_from',
+    "FRANCHISE": 'franchise',
+    "RELATED_TO": 'related_to',
+    "HELP": 'help'
 }

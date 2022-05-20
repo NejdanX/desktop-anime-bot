@@ -12,7 +12,7 @@ import hashlib
 
 class Login(QMainWindow, Ui_LoginWindow):
     def __init__(self):
-        self.con = sqlite3.connect(DB_FILE_NAME)
+        self.con = sqlite3.connect(DB_FILE_NAME)  # Подключаемся к локальной БД
         super(Login, self).__init__()
         self.setupUi(self)
         self.initUi()
@@ -24,7 +24,7 @@ class Login(QMainWindow, Ui_LoginWindow):
     def sign_in(self):
         """Авторизация пользователя и выдача соответствующих прав"""
         cur = self.con.cursor()
-        # Хэшируем и сравниваем хэш в БД и введенный
+        # Хэшируем введенный пользователем пароль и сравниваем хэш в БД и введенный
         password = hashlib.sha512(self.input_password.text().encode()).hexdigest()
         is_correct_user = cur.execute('''
                                 SELECT COUNT(username) FROM User

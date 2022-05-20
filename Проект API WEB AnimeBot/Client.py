@@ -2,7 +2,7 @@ import sys
 from chat_form import Ui_ChatForm
 from PyQt5.QtCore import Qt, QSize
 import os
-from Constants import JUST_HELP
+from Constants import JUST_HELP, COMMANDS
 from PyQt5.Qt import QColor
 from PyQt5 import QtGui
 from Bot import Bot
@@ -24,6 +24,7 @@ class Client(QMainWindow, Ui_ChatForm):
         self.set_ui()
 
     def set_ui(self):
+        # Настраиваем контекстное меню при нажатии на сообщения ПКМ
         self.chat.setContextMenuPolicy(Qt.CustomContextMenu)
         self.chat.customContextMenuRequested.connect(self.context)
         self.chat.itemClicked.connect(self.open_message)
@@ -45,7 +46,10 @@ class Client(QMainWindow, Ui_ChatForm):
         if os.path.exists(self.filename) and os.stat(self.filename).st_size > 0:
             with open(self.filename, 'r', encoding='utf8') as file:
                 json_file = json.load(file)
+            # Извлекаем из json-файла только данные
             self.queries = json_file['queries']
+            # Записываем в кеш бота все данные, которые были получены из запросов пользователя
+            # для следующего их быстрого поиска
             self.bot.cash_requests = {int(anime_id): data for anime_id, data in json_file.items()
                                       if anime_id != 'queries' and anime_id != 'bot name'}
             for query in self.queries:
@@ -90,7 +94,8 @@ class Client(QMainWindow, Ui_ChatForm):
         self.message.show()
 
     def delete_message(self):
-        self.chat.takeItem(self.chat.row(self.chat.itemAt(self.point)))
+        """Удаляет сообщение выбранное пользователем"""
+        self.chat.takeItem(self.chat.row(self.chat.itemAt(self.point)))  # TODO удаление из кеша запросов
 
     def set_command_text(self, labels):
         name = self.bot.get_name()
@@ -101,6 +106,7 @@ class Client(QMainWindow, Ui_ChatForm):
         self.text_message.setPlainText(self.sender().text())
 
     def send_message(self):
+        """Отправка сообщения и получение ответа от пользователя"""
         item = QListWidgetItem(self.text_message.toPlainText() + '\n')
         item.setTextAlignment(Qt.AlignRight)
         item.setSizeHint(QSize(self.chat.size().width() - 5, 50))
@@ -118,7 +124,7 @@ class Client(QMainWindow, Ui_ChatForm):
             for id in list(self.bot.cash_requests.keys()):
                 new_cash[id] = {'commands': {}}
                 for command in self.bot.cash_requests[id]['commands']:
-                    if command == 'random_anime' or command == 'find_anime':
+                    if command == COMMANDS['RANDOM'] or command == COMMANDS['FIND']:
                         new_cash[id]['commands'][command] = ('', self.bot.cash_requests[id]['commands'][command][1])
                     elif command == 'search_character':
                         if not new_cash[id]['commands'].get(command):
@@ -128,7 +134,7 @@ class Client(QMainWindow, Ui_ChatForm):
                             new_cash[id]['commands'][command].update({character_id: ('', character_info)})
                     else:
                         new_cash[id]['commands'][command] = self.bot.cash_requests[id]['commands'][command]
-            # Кэш сохраняем полностью, но сохраняем последние 15 запросов (чтобы программа не запускалась слишком долго)
+            # Сохраняем последние 15 запросов (чтобы программа не запускалась слишком долго)
             new_cash.update({'queries': self.queries[-15:]})
             new_cash.update({'bot name': self.bot.get_name()})
             with open(self.filename, 'w') as f:

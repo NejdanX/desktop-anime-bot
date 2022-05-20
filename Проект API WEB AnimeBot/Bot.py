@@ -5,7 +5,7 @@ from urllib.parse import quote
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QListWidgetItem
-from .Constants import COMMANDS_HELP
+from Constants import COMMANDS_HELP, COMMANDS
 from random import randint
 from datetime import datetime
 from nltk import edit_distance  # Расчёт расстояния между словами, так можно исправить простейшие очепятки
@@ -35,85 +35,95 @@ class Bot:
     def help(self, command):
         return COMMANDS_HELP.get(command, 'Не удалось распознать команду')
 
+    def answer(self, width, height, message):
+        new_item = QListWidgetItem(message)
+        new_item.setTextAlignment(Qt.AlignJustify)
+        new_item.setSizeHint((QSize(width, height)))
+        return new_item
+
     def reaction(self, client, last_message):
         """Реакция на сообщение пользователя"""
         self.client = client
-        if not last_message.startswith(self.get_command_symbol()) and not last_message.startswith(self.get_name()):
-            self.client.chat.addItem('Хм...')
-            return
-        last_message = ''.join(last_message.split(self.command_symbol if self.command_symbol in last_message
-                                                  else f'{self.name}, '))
+        # if not last_message.startswith(self.get_command_symbol()) and not last_message.startswith(self.get_name()):
+        #     self.client.chat.addItem('Хм...')  # TODO Random Phrase
+        #     return
         last_message = last_message.split()
-        if 'help' in last_message:
+        if COMMANDS['HELP'] in last_message:
             new_item = QListWidgetItem()
             new_item.setTextAlignment(Qt.AlignJustify)
-            if len(last_message) == 1:
+            if len(last_message) == 2:
                 # Краткая информация о боте и командах
-                answer = self.help('help')
+                answer = self.help(COMMANDS['HELP'])
                 new_item.setText(answer)
                 new_item.setSizeHint((QSize(self.client.chat.size().width() - 5, 250)))
                 return new_item
             else:
                 # Более подробная информация о конкретной команде
-                answer = self.help(' '.join(last_message[1:]))
+                answer = self.help(' '.join(last_message[2:]))
                 height = 30 if answer == 'Не удалось распознать команду' else 150
                 new_item.setText(answer)
                 new_item.setSizeHint((QSize(self.client.chat.size().width() - 5, height)))
                 return new_item
-        if 'bot_name' in last_message:
-            new_item = QListWidgetItem('Моё имя без истерик: ' + self.get_name())
-            new_item.setTextAlignment(Qt.AlignJustify)
-            new_item.setSizeHint((QSize(self.client.chat.size().width() - 5, 30)))
-            return new_item
-        elif 'set_new_name' in last_message:
-            if len(last_message) != 2:
-                new_item = QListWidgetItem('Некорректное имя. Имя должно состоять из одного слова.')
-                new_item.setTextAlignment(Qt.AlignJustify)
-                new_item.setSizeHint((QSize(self.client.chat.size().width() - 5, 30)))
-                return new_item
-            new_name = last_message[1]
+        if COMMANDS["BOT_NAME"] in last_message:
+            return self.answer(self.client.chat.size().width() - 5, 30, 'Моё имя без истерик: ' + self.get_name())
+        elif COMMANDS["SET_NAME"] in last_message:
+            if len(last_message) != 3:
+                return self.answer(self.client.chat.size().width() - 5, 30,
+                                   'Некорректное имя. Имя должно состоять из одного слова.')
+            new_name = last_message[2]
             self.set_name(new_name)
             self.client.set_command_text(self.client.labels)
-            new_item = QListWidgetItem(f'Имя бота была изменено на: {new_name}')
-            new_item.setTextAlignment(Qt.AlignJustify)
-            new_item.setSizeHint((QSize(self.client.chat.size().width() - 5, 30)))
-            return new_item
-        elif 'find_anime' in last_message:
-            anime_name = ' '.join(last_message[last_message.index('find_anime') + 1:]).lower()
+            return self.answer(self.client.chat.size().width() - 5, 30, f'Имя бота была изменено на: {new_name}')
+        elif COMMANDS["FIND"] in last_message:
+            if len(last_message) < 3:
+                return self.answer(self.client.chat.size().width() - 5, 30,
+                                   "Некорректный запрос. Введите название аниме.")
+            anime_name = ' '.join(last_message[last_message.index(COMMANDS["FIND"]) + 1:]).lower()
             return self.take_data_with_handle_exception(self.find_anime_by_name, anime_name)
-        elif 'all_characters_from' in last_message:
-            anime_name = ' '.join(last_message[last_message.index('all_characters_from') + 1:]).lower()
+        elif COMMANDS["ALL_CHARACTERS"] in last_message:
+            if len(last_message) < 3:
+                return self.answer(self.client.chat.size().width() - 5, 30,
+                                   "Некорректный запрос. Введите название аниме.")
+            anime_name = ' '.join(last_message[last_message.index(COMMANDS["ALL_CHARACTERS"]) + 1:]).lower()
             return self.take_data_with_handle_exception(self.find_all_characters_from_anime, anime_name)
         elif 'character' in last_message and 'from' in last_message:
-            character, anime = last_message[1:last_message.index('from')], last_message[last_message.index('from') + 1:]
+            if len(last_message) < 5:
+                return self.answer(self.client.chat.size().width() - 5, 30,
+                                   "Некорректный запрос. Введите персонажа и название аниме.")
+            character, anime = last_message[2:last_message.index('from')], last_message[last_message.index('from') + 1:]
             character, anime = ' '.join(character), ' '.join(anime)
             return self.take_data_with_handle_exception(self.search_character_from_anime, character, anime)
-        elif 'related_to' in last_message:
-            anime_name = ' '.join(last_message[last_message.index('related_to') + 1:])
+        elif COMMANDS["RELATED_TO"] in last_message:
+            if len(last_message) < 3:
+                return self.answer(self.client.chat.size().width() - 5, 30,
+                                   "Некорректный запрос. Введите название аниме.")
+            anime_name = ' '.join(last_message[last_message.index(COMMANDS["RELATED_TO"]) + 1:])
             return self.take_data_with_handle_exception(self.find_related_to_anime, anime_name)
-        elif 'similar_anime_to' in last_message:
+        elif COMMANDS["SIMILAR"] in last_message:
+            if len(last_message) < 3:
+                return self.answer(self.client.chat.size().width() - 5, 30,
+                                   "Некорректный запрос. Введите название аниме.")
             count_anime = 10
             if 'count' in last_message:
                 count_anime = int(last_message[-1])
                 last_message = last_message[:-2]
-            anime_name = ' '.join(last_message[last_message.index('similar_anime_to') + 1:])
+            anime_name = ' '.join(last_message[last_message.index(COMMANDS["SIMILAR"]) + 1:])
             return self.take_data_with_handle_exception(self.find_similar_anime, anime_name, count_anime)
-        elif 'franchise' in last_message:
-            anime_name = ' '.join(last_message[last_message.index('franchise') + 1:])
+        elif COMMANDS["FRANCHISE"] in last_message:
+            if len(last_message) < 3:
+                return self.answer(self.client.chat.size().width() - 5, 30,
+                                   "Некорректный запрос. Введите название аниме.")
+            anime_name = ' '.join(last_message[last_message.index(COMMANDS["FRANCHISE"]) + 1:])
             return self.take_data_with_handle_exception(self.find_franchise, anime_name)
-        elif 'random_anime' in last_message:
+        elif COMMANDS["RANDOM"] in last_message:
             return self.take_data_with_handle_exception(self.random_anime)
         else:
-            new_item = QListWidgetItem('Да?')
-            new_item.setTextAlignment(Qt.AlignJustify)
-            new_item.setSizeHint((QSize(self.client.chat.size().width() - 5, 30)))
-            self.client.chat.addItem(new_item)
+            self.client.chat.addItem(self.answer(self.client.chat.size().width() - 5, 30, 'Да?'))
             return
 
     def take_data_with_handle_exception(self, function, *args):
-        apologize = QListWidgetItem('Сервер не отвечает. Попробуйте сделать ваш запрос позже. Извините за неудобства!')
-        apologize.setTextAlignment(Qt.AlignJustify)
-        apologize.setSizeHint((QSize(self.client.chat.size().width() - 5, 40)))
+        """Пытается получить данные или правильно обработать исключение"""
+        apologize = 'Сервер не отвечает. Попробуйте сделать ваш запрос позже. Извините за неудобства!'
         try:
             return function(*args)
         except HTTPError as err:
@@ -121,13 +131,13 @@ class Bot:
                 info = f'Date: {str(datetime.now())} User: {self.client.name}\n' \
                        f'Query: {function.__name__}\nCode: {err.code} {err.read()}\n\n'
                 file.write(info)
-            return apologize
+            return self.answer(self.client.chat.size().width() - 5, 40, apologize)
         except URLError as err:
             with open('static/logs/log.txt', 'a', encoding='utf8') as file:
                 info = f'Date: {str(datetime.now())} User: {self.client.name}\n' \
                        f'Query: {function.__name__}\nCode: {err.reason}\n\n'
                 file.write(info)
-            return apologize
+            return self.answer(self.client.chat.size().width() - 5, 40, apologize)
 
     def take_json_data(self, url):
         """Пытается взять данные у сервера. Если сервер не дал данные,
@@ -146,8 +156,8 @@ class Bot:
         anime_id = self.take_anime_id(anime)
         if anime_id.__class__.__name__ == 'QListWidgetItem':
             return anime_id
-        if anime_id in self.cash_requests and 'similar_anime_to' in self.cash_requests[anime_id]['commands']:
-            json_anime_information = self.cash_requests[anime_id]['commands']['similar_anime_to'][1]
+        if anime_id in self.cash_requests and COMMANDS['SIMILAR'] in self.cash_requests[anime_id]['commands']:
+            json_anime_information = self.cash_requests[anime_id]['commands'][COMMANDS['SIMILAR']][1]
         else:
             json_anime_information = self.take_json_data(self.url + f"/animes/{anime_id}/similar")
         if json_anime_information.__class__.__name__ == 'dict' and json_anime_information.get('error'):
@@ -156,23 +166,19 @@ class Bot:
         else:
             info = '\n\n'.join([self.anime_information(dictionary) for dictionary in json_anime_information[:count]])
             height = 215
-        new_item = QListWidgetItem(info)
-        new_item.setTextAlignment(Qt.AlignJustify)
-        new_item.setSizeHint((QSize(self.client.chat.size().width() - 5, height)))
         if self.cash_requests.get(anime_id):  # Если аниме с таким id уже есть, то просто обновляем словарь
-            self.cash_requests[anime_id]['commands'].update({'similar_anime_to': ('', json_anime_information)})
+            self.cash_requests[anime_id]['commands'].update({COMMANDS['SIMILAR']: ('', json_anime_information)})
         else:
-            self.cash_requests[anime_id] = {'commands': {'similar_anime_to': ('', json_anime_information)}}
-
-        return new_item
+            self.cash_requests[anime_id] = {'commands': {COMMANDS['SIMILAR']: ('', json_anime_information)}}
+        return self.answer(self.client.chat.size().width() - 5, height, info)
 
     def find_franchise(self, anime):
         """Находит франшизу. Результат не кэширует"""
         anime_id = self.take_anime_id(anime)
         if anime_id.__class__.__name__ == 'QListWidgetItem':
             return anime_id
-        if anime_id in self.cash_requests and 'franchise' in self.cash_requests[anime_id]['commands']:
-            json_anime_information = self.cash_requests[anime_id]['commands']['franchise'][1]
+        if anime_id in self.cash_requests and COMMANDS["FRANCHISE"] in self.cash_requests[anime_id]['commands']:
+            json_anime_information = self.cash_requests[anime_id]['commands'][COMMANDS["FRANCHISE"]][1]
         else:
             json_anime_information = self.take_json_data(self.url + f"/animes/{anime_id}/franchise?order=year")
         if json_anime_information.__class__.__name__ == 'dict' and json_anime_information.get('error'):
@@ -185,21 +191,18 @@ class Bot:
             else:
                 info = 'Не удалось найти франшизу'
                 height = 30
-        new_item = QListWidgetItem(info)
-        new_item.setTextAlignment(Qt.AlignJustify)
-        new_item.setSizeHint((QSize(self.client.chat.size().width() - 5, height)))
         if self.cash_requests.get(anime_id):  # Если аниме с таким id уже есть, то просто обновляем словарь
-            self.cash_requests[anime_id]['commands'].update({'franchise': ('', json_anime_information)})
+            self.cash_requests[anime_id]['commands'].update({COMMANDS["FRANCHISE"]: ('', json_anime_information)})
         else:
-            self.cash_requests[anime_id] = {'commands': {'franchise': ('', json_anime_information)}}
-        return new_item
+            self.cash_requests[anime_id] = {'commands': {COMMANDS["FRANCHISE"]: ('', json_anime_information)}}
+        return self.answer(self.client.chat.size().width() - 5, height, info)
 
     def random_anime(self):
         """Возвращает случайно найденное аниме. К сожалению, данного метода нет в API, т.ч. импровизируем"""
         if self.client.previous_random_data:
             id_random_anime_in_cash = []
             for id in list(self.cash_requests.keys())[-15:]:
-                rd = self.cash_requests[id]['commands'].get('random_anime')
+                rd = self.cash_requests[id]['commands'].get(COMMANDS['RANDOM'])
                 if rd:
                     id_random_anime_in_cash.append(rd[1]['id'])
                     if len(id_random_anime_in_cash) == self.client.previous_random_data:
@@ -214,8 +217,8 @@ class Bot:
                 if json_anime_information.__class__.__name__ == 'dict' and json_anime_information.get('error'):
                     json_anime_information = []
             anime_id = json_anime_information[0]['id']
-        if anime_id in self.cash_requests and 'random_anime' in self.cash_requests[anime_id]['commands']:
-            json_anime_information = self.cash_requests[anime_id]['commands']['random_anime'][1]
+        if anime_id in self.cash_requests and COMMANDS['RANDOM'] in self.cash_requests[anime_id]['commands']:
+            json_anime_information = self.cash_requests[anime_id]['commands'][COMMANDS['RANDOM']][1]
         else:
             json_anime_information = self.take_json_data(self.url + f"/animes/{anime_id}")
         if json_anime_information.__class__.__name__ == 'dict' and json_anime_information.get('error'):
@@ -233,9 +236,9 @@ class Bot:
             new_item.setTextAlignment(Qt.AlignJustify)
             new_item.setSizeHint((QSize(self.client.chat.size().width() - 5, self.height_message_item)))
         if self.cash_requests.get(anime_id):  # Если аниме с таким id уже есть, то просто обновляем словарь
-            self.cash_requests[anime_id]['commands'].update({'random_anime': (img, json_anime_information)})
+            self.cash_requests[anime_id]['commands'].update({COMMANDS['RANDOM']: (img, json_anime_information)})
         else:
-            self.cash_requests[anime_id] = {'commands': {'random_anime': (img, json_anime_information)}}
+            self.cash_requests[anime_id] = {'commands': {COMMANDS['RANDOM']: (img, json_anime_information)}}
         return new_item
 
     def find_related_to_anime(self, anime):
@@ -243,8 +246,8 @@ class Bot:
         anime_id = self.take_anime_id(anime)
         if anime_id.__class__.__name__ == 'QListWidgetItem':
             return anime_id
-        if anime_id in self.cash_requests and 'related_to' in self.cash_requests[anime_id]['commands']:
-            return self.search_in_cash(anime_id, 'related_to', self.related_anime_information, 300)
+        if anime_id in self.cash_requests and COMMANDS["RELATED_TO"] in self.cash_requests[anime_id]['commands']:
+            return self.search_in_cash(anime_id, COMMANDS["RELATED_TO"], self.related_anime_information, 300)
         else:
             new_url = self.url + f"/animes/{anime_id}/related"
             json_anime_information = json.loads(urllib.request.urlopen(new_url).read().decode('utf8'))
@@ -252,9 +255,9 @@ class Bot:
             new_item.setTextAlignment(Qt.AlignJustify)
             new_item.setSizeHint((QSize(self.client.chat.size().width() - 5, 300)))
             if self.cash_requests.get(anime_id):  # Если аниме с таким id уже есть, то просто обновляем словарь
-                self.cash_requests[anime_id]['commands'].update({'related_to': ('', json_anime_information)})
+                self.cash_requests[anime_id]['commands'].update({COMMANDS["RELATED_TO"]: ('', json_anime_information)})
             else:
-                self.cash_requests[anime_id] = {'commands': {'related_to': ('', json_anime_information)}}
+                self.cash_requests[anime_id] = {'commands': {COMMANDS["RELATED_TO"]: ('', json_anime_information)}}
             return new_item
 
     def search_character_from_anime(self, character, anime):
@@ -262,14 +265,14 @@ class Bot:
         anime_id = self.take_anime_id(anime)
         if anime_id.__class__.__name__ == 'QListWidgetItem':
             return anime_id
-        if anime_id in self.cash_requests and 'all_characters_from' in self.cash_requests[anime_id]['commands']:
+        if anime_id in self.cash_requests and COMMANDS["ALL_CHARACTERS"] in self.cash_requests[anime_id]['commands']:
             # Проверяем, запрашивались ли персонажи из этого аниме до этого
-            json_characters_information = self.cash_requests[anime_id]['commands']['all_characters_from'][1]
+            json_characters_information = self.cash_requests[anime_id]['commands'][COMMANDS["ALL_CHARACTERS"]][1]
         else:
             # Персонажей можно искать только через animes/id/roles,
             # так что просто запрашиваем данные о всех персонажах и уже там найдем нужного
             self.find_all_characters_from_anime(anime)
-            json_characters_information = self.cash_requests[anime_id]['commands']['all_characters_from'][1]
+            json_characters_information = self.cash_requests[anime_id]['commands'][COMMANDS["ALL_CHARACTERS"]][1]
         character_id = self.search_character(json_characters_information, character)
         if character_id.__class__.__name__ == 'QListWidgetItem':
             return character_id
@@ -308,8 +311,8 @@ class Bot:
         anime_id = self.take_anime_id(anime_name)
         if anime_id.__class__.__name__ == 'QListWidgetItem':
             return anime_id
-        if anime_id in self.cash_requests and 'all_characters_from' in self.cash_requests[anime_id]['commands']:
-            return self.search_in_cash(anime_id, 'all_characters_from', self.all_characters_by_rolls,
+        if anime_id in self.cash_requests and COMMANDS["ALL_CHARACTERS"] in self.cash_requests[anime_id]['commands']:
+            return self.search_in_cash(anime_id, COMMANDS["ALL_CHARACTERS"], self.all_characters_by_rolls,
                                        self.height_message_item - 305)
         else:
             new_url = self.url + f"/animes/{anime_id}/roles"
@@ -320,9 +323,9 @@ class Bot:
             new_item.setSizeHint((QSize(self.client.chat.size().width() - 5, self.height_message_item - 305)))
             if self.cash_requests.get(anime_id):  # Если аниме с таким id уже есть, то просто обновляем словарь
                 self.cash_requests[anime_id]['commands'].update({
-                    'all_characters_from': ('', json_characters_information)})
+                    COMMANDS["ALL_CHARACTERS"]: ('', json_characters_information)})
             else:
-                self.cash_requests[anime_id] = {'commands': {'all_characters_from': ('', json_characters_information)}}
+                self.cash_requests[anime_id] = {'commands': {COMMANDS["ALL_CHARACTERS"]: ('', json_characters_information)}}
             return new_item
 
     def find_anime_by_name(self, anime_name):
@@ -330,11 +333,11 @@ class Bot:
         anime_id = self.take_anime_id(anime_name)
         if anime_id.__class__.__name__ == 'QListWidgetItem':
             return anime_id
-        if anime_id in self.cash_requests and 'find_anime' in self.cash_requests[anime_id]['commands'] and \
-                self.cash_requests[anime_id]['commands']['find_anime'][0]:
-            return self.search_in_cash(anime_id, 'find_anime', self.anime_information, self.height_message_item)
-        elif anime_id in self.cash_requests and 'find_anime' in self.cash_requests[anime_id]['commands']:
-            json_anime_information = self.cash_requests[anime_id]['commands']['find_anime'][1]
+        if anime_id in self.cash_requests and COMMANDS['FIND'] in self.cash_requests[anime_id]['commands'] and \
+                self.cash_requests[anime_id]['commands'][COMMANDS['FIND']][0]:
+            return self.search_in_cash(anime_id, COMMANDS['FIND'], self.anime_information, self.height_message_item)
+        elif anime_id in self.cash_requests and COMMANDS['FIND'] in self.cash_requests[anime_id]['commands']:
+            json_anime_information = self.cash_requests[anime_id]['commands'][COMMANDS['FIND']][1]
         else:
             new_url = self.url + f"/animes/{anime_id}"
             json_anime_information = json.loads(urllib.request.urlopen(new_url).read().decode('utf8'))  # А по id полную
@@ -345,9 +348,9 @@ class Bot:
         new_item.setTextAlignment(Qt.AlignJustify)
         new_item.setSizeHint((QSize(self.client.chat.size().width() - 5, self.height_message_item)))
         if self.cash_requests.get(anime_id):  # Если аниме с таким id уже есть, то просто обновляем словарь
-            self.cash_requests[anime_id]['commands'].update({'find_anime': (image, json_anime_information)})
+            self.cash_requests[anime_id]['commands'].update({COMMANDS['FIND']: (image, json_anime_information)})
         else:
-            self.cash_requests[anime_id] = {'commands': {'find_anime': (image, json_anime_information)}}
+            self.cash_requests[anime_id] = {'commands': {COMMANDS['FIND']: (image, json_anime_information)}}
         return new_item
 
     def take_anime_id(self, anime_name):
@@ -474,7 +477,7 @@ class Bot:
         return new_item
 
     def clear_description(self, description):
-        """Чистит описание от всяких тегов и прочего хлама"""
+        """Чистит описание от всяких тегов и прочего мусора"""
         result = []
         for string in description.split('\n'):
             if 'url=' in string:
